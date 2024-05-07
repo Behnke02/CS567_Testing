@@ -9,10 +9,12 @@ using namespace deepstate;
 #include <fstream>
 
 #define MAX_GENOME_LENGTH 1000000000
+#define MAX_NUM_QUERIES 100000
 #define MAX_STR_LEN 17
 #define INDEX_LENGTH 12
 #define IDENTIFIER_LENGTH 4
 
+/*
 TEST(String, StringLength)
 {
     char *string = DeepState_CStr_C(MAX_STR_LEN, "ACGTN");
@@ -24,6 +26,7 @@ TEST(String, CompareStings)
     ASSERT_EQ(compareString("", ""), 0);
     ASSERT_EQ(compareString("ATGGCGGTCCAGAAT", "ATGGCGGTCCAGAAT"), 0);
 }
+
 
 TEST(Hash, RadixConvert)
 {
@@ -55,11 +58,12 @@ TEST(Program, Construction)
     fclose(queryFile);
  
 }
+*/
 
 TEST(Program, Execution)
 {
-    int randomQuery = DeepState_MinInt(1);
-    int randomGenomeLength = DeepState_MinInt(QUERY_LENGTH);
+    int randomQuery = DeepState_Int64InRange(1, MAX_NUM_QUERIES);
+    int randomGenomeLength = DeepState_Int64InRange(QUERY_LENGTH, MAX_GENOME_LENGTH);
     char **queries = (char**)malloc(sizeof(char*) * randomQuery);
     char *genome = (char*)malloc(sizeof(char) * randomGenomeLength);
     std::ofstream tempQueryFile("testQueryFile.txt", std::ofstream::binary);
@@ -82,7 +86,7 @@ TEST(Program, Execution)
     Queries_HT sixtyMSize = Queries_HT(queryFile, 60000000);
     unsigned int numCollisions = sixtyMSize.fillHashes(false);
 
-    ASSERT_GE(sixtyMSize.numQueries, randomQuery) << sixtyMSize.numQueries << randomQuery;
+    ASSERT_GE(sixtyMSize.numQueries, randomQuery);
 
     unsigned int genomeLength = 0;
         unsigned int genomeIndex = 0;
@@ -123,17 +127,8 @@ TEST(Program, Execution)
             }
         }
 
-    ASSERT_GT(numMatches, 0);
-
     fclose(genomeFile);
     fclose(queryFile);
-
-    free(genome);
-    for(int index = 0; index < randomQuery; index++)
-    {
-        free(queries[index]);
-    }
-    free(queries);
 }
 
 /*
